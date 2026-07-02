@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特定商取引法に基づく表記 ｜ 作戦盤 TEAM BOARD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e1218;--bg2:#151b24;
+  --card:#1d2430;
+  --text:#eef1f5;--muted:#8b95a3;
+  --accent:#37c7df;
+  --line:#2a323d;--line-soft:rgba(255,255,255,.07);
+  --radius:16px;
+  --grad-accent:linear-gradient(135deg,#37c7df 0%,#2a9fcf 100%);
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);min-height:100vh;
+  font-family:"Noto Sans JP",-apple-system,"Hiragino Sans","Yu Gothic",sans-serif;
+  background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 42%);
+  background-attachment:fixed;
+  display:flex;flex-direction:column;align-items:center;padding:0}
+.wrap{width:100%;max-width:760px;padding:0 20px 60px}
+.app-header{width:100%;display:flex;align-items:center;gap:11px;padding:22px 0 30px}
+.app-header .logo{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;font-size:21px;background:var(--grad-accent)}
+.app-header .ttl{display:flex;flex-direction:column;line-height:1.2}
+.app-header .ttl b{font-size:18px;font-weight:900}
+.app-header .ttl span{font-size:11px;color:var(--muted);letter-spacing:.14em;font-weight:500}
+h1{font-size:20px;font-weight:900;margin:0 0 24px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);overflow:hidden}
+th,td{text-align:left;padding:16px 18px;font-size:13px;line-height:1.8;vertical-align:top;
+  border-bottom:1px solid var(--line-soft)}
+tr:last-child th, tr:last-child td{border-bottom:none}
+th{width:34%;color:var(--muted);font-weight:700;white-space:nowrap}
+td{color:var(--text)}
+.note{font-size:11.5px;color:var(--muted);margin-top:18px;line-height:1.8}
+a{color:var(--accent)}
+.back{display:inline-block;margin-top:28px;font-size:12.5px;color:var(--muted);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="app-header">
+    <div class="logo">🏀</div>
+    <div class="ttl"><b>作戦盤</b><span>TEAM BOARD</span></div>
+  </header>
+
+  <h1>特定商取引法に基づく表記</h1>
+
+  <table>
+    <tr><th>販売事業者</th><td>銀座トレーニングラボ</td></tr>
+    <tr><th>運営統括責任者</th><td>今村雅史</td></tr>
+    <tr><th>所在地</th><td>東京都中央区銀座１−１５−１３</td></tr>
+    <tr><th>電話番号</th><td>070-6642-7855</td></tr>
+    <tr><th>メールアドレス</th><td>info@ginza-training.com</td></tr>
+    <tr><th>販売価格</th><td>1ヶ月契約：¥3,000／3ヶ月契約：¥7,500／半年契約：¥12,000（すべて税込）<br>※詳細は<a href="LP.html">料金ページ</a>をご確認ください。</td></tr>
+    <tr><th>商品代金以外の必要料金</th><td>特になし</td></tr>
+    <tr><th>お支払い方法</th><td>クレジットカード決済</td></tr>
+    <tr><th>お支払い時期</th><td>お申し込み時</td></tr>
+    <tr><th>サービス提供時期</th><td>お支払い確認後、原則1〜2営業日以内にメールにて合言葉とURLをお送りします。</td></tr>
+    <tr><th>返品・キャンセルについて</th><td>デジタルサービスの性質上、お申し込み後の返金は一切お受けしておりません。ご不明点はお申し込み前にお問い合わせください。</td></tr>
+    <tr><th>動作環境</th><td>インターネットに接続されたスマートフォン・タブレット・PCの各種ブラウザ（Google Chrome推奨）</td></tr>
+  </table>
+
+  <p class="note">※お支払い時期・サービス提供時期・キャンセルポリシーは運用状況に応じて変更される場合があります。最新情報はお問い合わせください。</p>
+
+  <a class="back" href="LP.html">← 商品ページへ戻る</a>
+</div>
+</body>
+</html>
