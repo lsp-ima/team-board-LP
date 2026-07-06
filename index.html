@@ -122,6 +122,21 @@ section.blk{padding:56px 0 8px}
 .pain-card .o{font-size:13px;font-weight:700;color:#9fe3b8;display:flex;gap:8px;
   align-items:flex-start;line-height:1.7}
 
+/* ===== live demo ===== */
+.demo-wrap{max-width:520px;margin:0 auto;text-align:center;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 20px 26px;box-shadow:var(--shadow)}
+.demo-wrap canvas{touch-action:none;max-width:100%;height:auto;border-radius:12px;
+  background:#0f141c;box-shadow:0 6px 18px rgba(0,0,0,.35)}
+.demo-ctrl{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-top:16px}
+.demo-ctrl button{font-size:12.5px;font-weight:700;padding:10px 16px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);
+  cursor:pointer;font-family:inherit;transition:.15s}
+.demo-ctrl button:hover{border-color:var(--accent-d)}
+.demo-ctrl button.play{border-color:rgba(55,199,223,.4);color:var(--accent)}
+.demo-ctrl button.stop{background:var(--grad-orange);border-color:transparent;color:#fff}
+.demo-hint{font-size:11.5px;color:var(--muted);line-height:1.7;margin-top:12px}
+
 /* ===== features ===== */
 .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
 .feat-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
@@ -249,7 +264,7 @@ footer a{color:var(--muted)}
       <p class="sub">合言葉を入れるだけで、選手も保護者もコーチも同じ画面を見られます。アプリのインストールは不要。スマホでもPCでも、その日からすぐ使えます。</p>
       <div class="cta-row">
         <a class="cta-btn" href="https://forms.gle/yQoeWER1qPY8R1Qq9" target="_blank" rel="noopener">🏀 購入申し込みはこちら</a>
-        <a class="cta-ghost" href="#trial">先に体験してみる →</a>
+        <a class="cta-ghost" href="#demo">🎮 作戦盤を触ってみる</a>
       </div>
       <div class="cta-sub">申し込み後、担当より合言葉とURLをメールでお送りします</div>
       <div class="trust-chips">
@@ -327,6 +342,23 @@ footer a{color:var(--muted)}
     </div>
   </div>
 
+  <!-- ================= LIVE DEMO ================= -->
+  <section class="blk rv" id="demo">
+    <span class="eyebrow">TRY IT NOW</span>
+    <h2>実際に触れる作戦盤</h2>
+    <p class="lead">選手はドラッグして自由に動かせます。ボタンを押すと、実際のプレー例がそのままアニメーションで再生されます。</p>
+    <div class="demo-wrap">
+      <canvas id="demoCourt" aria-label="作戦盤デモ（ドラッグで操作できます）"></canvas>
+      <div class="demo-ctrl">
+        <button class="play" onclick="demoLoadPlay('pr')">▶ P&amp;R（ロール）を再生</button>
+        <button class="play" onclick="demoLoadPlay('pn')">▶ パス&amp;ランを再生</button>
+        <button class="stop" id="demoStopBtn" style="display:none" onclick="demoStop()">■ 停止</button>
+        <button onclick="demoReset()">↺ リセット</button>
+      </div>
+      <div class="demo-hint" id="demoStatus">左のベンチの選手をコートへドラッグして自由に配置できます</div>
+    </div>
+  </section>
+
   <!-- ================= 悩み ================= -->
   <section class="blk rv">
     <span class="eyebrow">PROBLEM → SOLUTION</span>
@@ -368,21 +400,26 @@ footer a{color:var(--muted)}
         <p>YouTubeなどの動画URLを貼るだけで、チーム全員／選手ごとに動画を共有。アプリ内でそのまま再生できます。</p>
       </div>
       <div class="feat-card">
+        <div class="ic">📋</div>
+        <h3>練習メニュー</h3>
+        <p>作戦盤で作った動き・選手のラン・YouTube動画をひとつのメニューにまとめて共有。タップした場所からすぐに動きや動画を見られます。</p>
+      </div>
+      <div class="feat-card warm">
         <div class="ic">📅</div>
         <h3>予定・質問掲示板</h3>
         <p>練習試合・大会の予定を共有。集合時間や経路メモも。質問箱で選手・保護者からの相談も受け付けられます。</p>
       </div>
-      <div class="feat-card warm">
+      <div class="feat-card">
         <div class="ic">👥</div>
         <h3>名簿・出欠・スコア</h3>
         <p>チーム分け（名称も自由に変更可）と背番号を管理。試合ごとの出欠確認、得点記録も残せます。</p>
       </div>
-      <div class="feat-card">
+      <div class="feat-card warm">
         <div class="ic">🔒</div>
         <h3>合言葉だけでOK</h3>
         <p>アカウント登録は不要。チーム共通の合言葉を知っている人だけが、同じ情報を見られます。</p>
       </div>
-      <div class="feat-card warm">
+      <div class="feat-card">
         <div class="ic">📱</div>
         <h3>インストール不要</h3>
         <p>ブラウザで開くだけ。スマホ・タブレット・PC、どの端末からでもすぐに使えます。</p>
@@ -498,6 +535,187 @@ footer a{color:var(--muted)}
 </div>
 
 <script>
+(function(){
+  const canvas = document.getElementById('demoCourt');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const COURT = {wm:15, lm:14};
+  const BENCH_W = 54, padPx = 16, R = 0.62;
+  let scale = 1, originX = BENCH_W, W = 300, H = 300;
+
+  function mx(m){ return originX + m*scale; }
+  function my(m){ return padPx + m*scale; }
+
+  function layout(){
+    const courtPx = 300;
+    scale = courtPx / COURT.wm;
+    W = BENCH_W + COURT.wm*scale + 12;
+    H = COURT.lm*scale + padPx*2;
+    canvas.width = W; canvas.height = H;
+  }
+
+  let offense = [], ball = {m:[7.5,8.4]}, animating = false, raf = null;
+
+  function defaultPositions(){
+    const bxm = -(BENCH_W/2)/scale;
+    offense = [];
+    for(let i=0;i<5;i++) offense.push({label:''+(i+1), m:[bxm, ((i+0.5)/5)*COURT.lm], hidden:false});
+    ball.m = [7.5,8.4];
+  }
+
+  function line(w){ ctx.strokeStyle='rgba(255,255,255,.92)'; ctx.lineWidth=w||2; }
+
+  function drawCourt(){
+    const w=COURT.wm, l=COURT.lm;
+    const cp=9, cl=mx(0)-cp, ct=my(0)-cp, cw=w*scale+cp*2, ch=l*scale+cp*2;
+    ctx.fillStyle='#0f141c'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#c8965a'; ctx.fillRect(cl,ct,cw,ch);
+    ctx.strokeStyle='#3aa6b9'; ctx.lineWidth=4; ctx.strokeRect(cl+2,ct+2,cw-4,ch-4);
+    line(2);
+    ctx.strokeRect(mx(0),my(0),w*scale,l*scale);
+    const cx=w/2, basketY=1.575;
+    ctx.beginPath();ctx.moveTo(mx(cx-0.9),my(1.2));ctx.lineTo(mx(cx+0.9),my(1.2));ctx.stroke();
+    ctx.beginPath();ctx.arc(mx(cx),my(basketY),0.225*scale,0,7);ctx.stroke();
+    const keyW=4.9, ftY=5.8;
+    ctx.strokeRect(mx(cx-keyW/2),my(0),keyW*scale,ftY*scale);
+    ctx.beginPath();ctx.arc(mx(cx),my(ftY),1.8*scale,0,Math.PI);ctx.stroke();
+    ctx.beginPath();ctx.arc(mx(cx),my(basketY),1.25*scale,0,Math.PI);ctx.stroke();
+    const r3=6.75, cornerX=0.9;
+    const dx=(cx-cornerX);
+    const yAtArc = basketY + Math.sqrt(Math.max(0,r3*r3 - dx*dx));
+    ctx.beginPath();ctx.moveTo(mx(cornerX),my(0));ctx.lineTo(mx(cornerX),my(yAtArc));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(mx(w-cornerX),my(0));ctx.lineTo(mx(w-cornerX),my(yAtArc));ctx.stroke();
+    const a0=Math.atan2(yAtArc-basketY, -dx), a1=Math.atan2(yAtArc-basketY, dx);
+    ctx.beginPath();ctx.arc(mx(cx),my(basketY),r3*scale, a1, a0);ctx.stroke();
+  }
+
+  function drawDisc(m,color,label){
+    const x=mx(m[0]), y=my(m[1]), r=R*scale;
+    ctx.beginPath();ctx.arc(x,y,r,0,7);
+    ctx.fillStyle=color;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${Math.round(r*0.95)}px sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(label,x,y);
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    drawCourt();
+    if(ballVisible) drawDisc(ball.m,'#ef6c00','');
+    offense.forEach(p=>{ if(!p.hidden) drawDisc(p.m,'#1976d2',p.label); });
+  }
+  let ballVisible = false;
+
+  // ---- drag ----
+  let dragIdx = null;
+  function toLocal(e){
+    const r = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return [ (t.clientX-r.left) * canvas.width/r.width, (t.clientY-r.top) * canvas.height/r.height ];
+  }
+  function findAt(px,py){
+    const m0=(px-originX)/scale, m1=(py-padPx)/scale;
+    let best=-1, bd=1.2;
+    offense.forEach((p,i)=>{ if(p.hidden) return; const d=Math.hypot(p.m[0]-m0,p.m[1]-m1); if(d<bd){bd=d;best=i;} });
+    return best;
+  }
+  canvas.addEventListener('pointerdown', e=>{
+    if(animating) return;
+    const [px,py]=toLocal(e);
+    const hit=findAt(px,py);
+    if(hit>=0){ dragIdx=hit; try{canvas.setPointerCapture(e.pointerId);}catch(err){} e.preventDefault(); }
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(dragIdx===null) return;
+    const [px,py]=toLocal(e);
+    offense[dragIdx].m=[(px-originX)/scale, (py-padPx)/scale];
+    draw(); e.preventDefault();
+  });
+  ['pointerup','pointercancel'].forEach(ev=>canvas.addEventListener(ev, ()=>{ dragIdx=null; }));
+
+  // ---- preset plays (座標は実アプリの作戦盤と同じデータ) ----
+  const DEMO_PLAYS = {
+    pr: { use:[0,4], label:'P&Rロール', desc:'5番がトップでボールスクリーン→ゴールへロール',
+      frames:[
+        { o:{0:[7.5,8.6],4:[9.8,3.4]}, ball:[7.5,8.4] },
+        { o:{0:[7.5,8.4],4:[8.8,7.2]}, ball:[7.5,8.4] },
+        { o:{0:[9.4,6.6],4:[8.8,7.2]}, ball:[9.4,6.6] },
+        { o:{0:[9.8,5.6],4:[8.2,3.4]}, ball:[9.8,5.6] },
+        { o:{0:[9.8,5.6],4:[7.8,2.4]}, ball:[7.9,2.6] },
+      ]
+    },
+    pn: { use:[0,1], label:'パス&ラン', desc:'1→2へパス、1番がゴールへカット（ギブ&ゴー）',
+      frames:[
+        { o:{0:[7.5,8.6],1:[2.4,6.8]}, ball:[7.5,8.4] },
+        { o:{0:[7.5,8.4],1:[2.4,6.8]}, ball:[2.8,6.9] },
+        { o:{0:[5.4,5.4],1:[2.4,6.8]}, ball:[2.6,6.8] },
+        { o:{0:[6.6,2.8],1:[2.4,6.8]}, ball:[6.8,2.6] },
+        { o:{0:[7.0,2.4],1:[2.4,6.8]}, ball:[6.8,2.6] },
+      ]
+    }
+  };
+
+  function interpKeyframes(keys){
+    const seg=22, out=[];
+    for(let k=0;k<keys.length-1;k++){
+      const a=keys[k], b=keys[k+1];
+      for(let t=0;t<seg;t++){
+        const r=t/seg;
+        const e=r<.5?2*r*r:1-Math.pow(-2*r+2,2)/2;
+        out.push([a[0]+(b[0]-a[0])*e, a[1]+(b[1]-a[1])*e]);
+      }
+    }
+    out.push([...keys[keys.length-1]]);
+    return out;
+  }
+
+  window.demoLoadPlay = function(key){
+    if(animating) return;
+    const play = DEMO_PLAYS[key];
+    const f = play.frames;
+    offense.forEach((p,i)=>p.hidden=!play.use.includes(i));
+    ballVisible = true;
+    const pathsByIdx = {};
+    play.use.forEach(i=>{ pathsByIdx[i] = interpKeyframes(f.map(fr=>fr.o[i])); });
+    const ballPath = interpKeyframes(f.map(fr=>fr.ball));
+    play.use.forEach(i=>{ offense[i].m=[...f[0].o[i]]; });
+    ball.m=[...f[0].ball];
+    document.getElementById('demoStatus').textContent = '「'+play.label+'」: '+play.desc;
+    draw();
+
+    animating = true;
+    document.getElementById('demoStopBtn').style.display='';
+    const maxLen = Math.max(ballPath.length, ...Object.values(pathsByIdx).map(p=>p.length));
+    let fr=0;
+    function step(){
+      if(!animating) return;
+      const idx=Math.min(Math.floor(fr), maxLen-1);
+      play.use.forEach(i=>{ const pa=pathsByIdx[i]; offense[i].m=[...pa[Math.min(idx,pa.length-1)]]; });
+      ball.m=[...ballPath[Math.min(idx,ballPath.length-1)]];
+      draw();
+      fr+=1;
+      if(fr>=maxLen){ animating=false; document.getElementById('demoStopBtn').style.display='none'; return; }
+      raf=requestAnimationFrame(step);
+    }
+    step();
+  };
+
+  window.demoStop = function(){
+    animating=false; if(raf) cancelAnimationFrame(raf);
+    document.getElementById('demoStopBtn').style.display='none';
+  };
+
+  window.demoReset = function(){
+    demoStop();
+    ballVisible = false;
+    document.getElementById('demoStatus').textContent = '左のベンチの選手をコートへドラッグして自由に配置できます';
+    layout(); defaultPositions(); draw();
+  };
+
+  layout(); defaultPositions(); draw();
+  window.addEventListener('resize', ()=>{ layout(); draw(); });
+})();
+
 (function(){
   if(!('IntersectionObserver' in window)) {
     document.querySelectorAll('.rv').forEach(function(el){el.classList.add('in')});
